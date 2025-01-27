@@ -28,6 +28,42 @@ local computer_Delay = 0
 local computer_Waiting = false 
 
 --[[
+    Function to help increment points when a combo occurs
+
+    If no combo occurs return 1
+]]
+local function checkComboPoints(person, column, row, number_to_Check)
+    local combo_Counter = 1
+    if person == "player" then
+        for _,cell in pairs(player.playerCells) do
+            if cell.x == column and cell.y ~= row then
+                -- if the current cell is on the same column as the cell column passed
+                if cell.die_number == number_to_Check then
+                    -- if its the same column and the same number, increases the combo count
+                    combo_Counter = combo_Counter + 1
+                end
+            end
+        end
+    else
+        for _,cell in pairs(enemy.enemyCells) do
+            if cell.x == column and cell.y ~= row then
+                if cell.die_number == number_to_Check then
+                    combo_Counter = combo_Counter + 1
+                end
+            end
+        end
+    end
+
+    if combo_Counter == 2 then
+        return number_to_Check * 4 - number_to_Check
+    elseif combo_Counter == 3 then
+        return number_to_Check * 9 - number_to_Check - number_to_Check
+    else
+        return number_to_Check
+    end
+end
+
+--[[
     Function called for when mouse is clicked
     can be seen as the player turn function
 ]]
@@ -49,7 +85,7 @@ function love.mousepressed(x, y, button, istouch, presses)
                     if target_Cell then
                         target_Cell.die_number = die.getNumber()
                         -- increment the player points when placing a die
-                        player.points = player.points + target_Cell.die_number
+                        player.points = player.points + checkComboPoints("player",target_Cell.x,target_Cell.y,target_Cell.die_number)
                         roll = true
                         player.player_Turn = false
                         computer_Waiting = true 
@@ -93,7 +129,7 @@ local function computerTurn()
         if target_Cell then
             target_Cell.die_number = die.getNumber()
             -- incremet the enemy points
-            enemy.points = enemy.points + target_Cell.die_number
+            enemy.points = enemy.points + checkComboPoints("enemy",target_Cell.x,target_Cell.y,target_Cell.die_number)
             roll = true
         end
     end
@@ -107,7 +143,7 @@ local function checkDieCollision()
             if player_Cell.x == enemy_Cell.x and player_Cell.die_number == enemy_Cell.die_number then
                 if not player.player_Turn then
                     -- decreasing the points from enemy
-                    enemy.points = enemy.points - enemy_Cell.die_number
+                    enemy.points = enemy.points - checkComboPoints("enemy",enemy_Cell.x,enemy_Cell.y,enemy_Cell.die_number)
                     enemy_Cell.die_number = 0 -- resets the current cell
 
                     -- check if there are die "above" the one destroyed
@@ -123,7 +159,7 @@ local function checkDieCollision()
                     end
                 else
                     -- decreasing the points from player
-                    player.points = player.points - player_Cell.die_number
+                    player.points = player.points - checkComboPoints("player",player_Cell.x,player_Cell.y,player_Cell.die_number)
                     player_Cell.die_number = 0
                     
                     -- check if there are die "bellow" the one destroyed
