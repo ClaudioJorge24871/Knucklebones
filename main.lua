@@ -41,6 +41,30 @@ function love.mousepressed(x, y, button, istouch, presses)
     end
 end
 
+--[[
+    Function to implement the logic of the computer/enemy play
+]] 
+local function computerTurn()
+    local available_Cells = {}
+    for _,cell in pairs(enemyCells) do
+        if cell.die_number == 0 then
+            table.insert(available_Cells,cell)
+        end
+    end
+
+    if #available_Cells > 0 then
+        local random_Index = math.random(1,#available_Cells)
+        local chosenCell = available_Cells(random_Index)
+
+        chosenCell.die_number = die.getNumber()
+
+        player_Turn = true
+    end
+end
+
+--[[
+    Function to load initial data of game
+]]
 function love.load()
     love.graphics.setBackgroundColor(115 / 255, 160 / 255, 30 / 255) -- green
 
@@ -64,14 +88,25 @@ function love.load()
     end
 end
 
+
+--[[
+    Function to update the program activity
+]] 
 function love.update(dt)
     if roll then
         local number = math.random(1,6)
         die = Dice(number)
         roll = false
     end
+
+    if not roll and not player_Turn then
+        computerTurn()
+    end
 end
 
+--[[
+    Function to draw on the screen
+]] 
 function love.draw()
     
     love.graphics.setColor(0,0,0) -- black
