@@ -1,4 +1,5 @@
 local love = require("love")
+local socket = require 'socket'
 local Dice = require("Dice")
 local Cell = require("Cell")
 
@@ -23,8 +24,10 @@ function love.mousepressed(x, y, button, istouch, presses)
                 local target_Cell = cell
                 -- check if there are empty cells above 
                 for _, other_Cell in pairs(playerCells) do
-                    if other_Cell.x == cell.x and other_Cell.y < target_Cell.y and other_Cell.die_number == 0 then
-                        target_Cell = other_Cell
+                    if target_Cell.die_number ~= 0 then
+                        if other_Cell.x == cell.x and other_Cell.y < target_Cell.y and other_Cell.die_number == 0 then
+                            target_Cell = other_Cell
+                        end
                     end
                 end
 
@@ -34,7 +37,6 @@ function love.mousepressed(x, y, button, istouch, presses)
                     roll = true
                     player_Turn = false
                 end
-
                 break
             end
         end
@@ -45,20 +47,36 @@ end
     Function to implement the logic of the computer/enemy play
 ]] 
 local function computerTurn()
-    local available_Cells = {}
+
+    local available_Columns = {}
     for _,cell in pairs(enemyCells) do
         if cell.die_number == 0 then
-            table.insert(available_Cells,cell)
+            available_Columns[cell.x] = true
         end
     end
 
-    if #available_Cells > 0 then
-        local random_Index = math.random(1,#available_Cells)
-        local chosenCell = available_Cells(random_Index)
+    local columnKeys = {}
+    for columnX, _ in pairs(available_Columns) do
+        table.insert(columnKeys, columnX)
+    end
 
-        chosenCell.die_number = die.getNumber()
+    if #columnKeys > 0 then
+        local randomColumn = columnKeys[math.random(1, #columnKeys)]
 
-        player_Turn = true
+        local target_Cell = nil
+        for _, cell in pairs(enemyCells) do
+            if cell.x == randomColumn and cell.die_number == 0 then
+                if not target_Cell or cell.y < target_Cell.y then
+                    target_Cell = cell
+                end
+            end
+        end
+
+        if target_Cell then
+            target_Cell.die_number = die.getNumber()
+            roll = true
+            player_Turn = true
+        end
     end
 end
 
@@ -100,7 +118,10 @@ function love.update(dt)
     end
 
     if not roll and not player_Turn then
+        socket.sleep(0.3)
         computerTurn()
+        socket.sleep(0.2)
+        roll = true
     end
 end
 
@@ -127,6 +148,11 @@ function love.draw()
     -- draw the enemy cells
     for _, cell in pairs(enemyCells) do
         cell:draw()
+        if cell.die_number ~=0 then
+            local cell_Die = Dice(cell.die_number)
+            local offset = 10
+            cell_Die:draw(cell.x + offset, cell.y + offset, 80, 80)
+        end
     end
 
     if not roll then
