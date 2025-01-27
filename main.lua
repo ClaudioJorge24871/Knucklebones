@@ -81,6 +81,22 @@ local function computerTurn()
             roll = true
         end
     end
+
+    player_Turn = true
+end
+
+local function checkDieCollision()
+    for _, player_Cell in pairs(playerCells) do
+        for _, enemy_Cell in pairs(enemyCells) do
+            if player_Cell.x == enemy_Cell.x and player_Cell.die_number == enemy_Cell.die_number then
+                if not player_Turn then
+                    enemy_Cell.die_number = 0
+                else
+                    player_Cell.die_number = 0
+                end
+            end
+        end
+    end
 end
 
 --[[ 
@@ -113,17 +129,6 @@ end
     Function to update the game logic
 ]]
 function love.update(dt)
-    for _, player_Cell in pairs(playerCells) do
-        for _, enemy_Cell in pairs(enemyCells) do
-            if player_Cell.x == enemy_Cell.x and player_Cell.die_number == enemy_Cell.die_number then
-                if not player_Turn then
-                    enemy_Cell.die_number = 0
-                else
-                    player_Cell.die_number = 0
-                end
-            end
-        end
-    end
 
     if roll then
         local number = math.random(1, 6)
@@ -133,13 +138,14 @@ function love.update(dt)
 
     if not roll and not player_Turn and computer_Waiting then
         computer_Delay = computer_Delay + dt
-        if computer_Delay >= 1 then
+        if computer_Delay >= 0.5 then
             computerTurn()
-            player_Turn = true
             roll = true
             computer_Waiting = false
         end
     end
+
+    checkDieCollision() -- checking if there are die collision
 end
 
 --[[ 
