@@ -5,7 +5,7 @@ math.randomseed(os.time())
 -- Object to create a die
 function Dice(_number)
     local DEFAULT_SIDES = 6
-    local number = _number or math.random(1,DEFAULT_SIDES)
+    local number = _number
 
     -- draws the dice points
     local draw_helper = function(x_Pos, y_Pos, width, height)

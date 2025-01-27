@@ -5,6 +5,7 @@ function Cell(x, y, size)
         x = x,
         y = y,
         size = size,
+        die_number = 0,
 
         draw = function(self)
             love.graphics.setColor(0, 0, 0)
