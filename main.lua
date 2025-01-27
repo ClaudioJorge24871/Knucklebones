@@ -15,31 +15,31 @@ local window_Height = love.graphics.getHeight()
 local playerCells = {}
 local enemyCells = {}
 
--- Variável para temporização
+-- Time variables
 local computer_Delay = 0
-local computer_Waiting = false -- Indica se o computador está aguardando
+local computer_Waiting = false 
 
 function love.mousepressed(x, y, button, istouch, presses)
     if player_Turn and (not roll) and button == 1 then
         for _, cell in pairs(playerCells) do
             if cell:checkPressed(x, y) then
-                -- lógica para quando uma célula é clicada
+                -- logic for when a cell is clicked
                 local target_Cell = cell
                 if target_Cell.die_number == 0 then
-                    -- verificar se há células vazias acima
+                    -- checks if there are empty cells above 
                     for _, other_Cell in pairs(playerCells) do
                         if other_Cell.x == cell.x and other_Cell.y < target_Cell.y and other_Cell.die_number == 0 then
                             target_Cell = other_Cell
                         end
                     end
 
-                    -- se uma célula vazia acima for encontrada, desenhe o dado nela
+                    -- if a empty cell was found above, draw on that cell
                     if target_Cell then
                         target_Cell.die_number = die.getNumber()
                         roll = true
                         player_Turn = false
-                        computer_Waiting = true -- Inicia o atraso para o computador jogar
-                        computer_Delay = 0    -- Reinicia o contador de atraso
+                        computer_Waiting = true 
+                        computer_Delay = 0 
                     end
                     break
                 end
@@ -49,7 +49,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 end
 
 --[[ 
-    Função para a jogada do computador 
+    Function for computer turn
 ]]
 local function computerTurn()
     local available_Columns = {}
@@ -84,14 +84,14 @@ local function computerTurn()
 end
 
 --[[ 
-    Função para carregar os dados iniciais do jogo 
+    Function to load the inital data
 ]]
 function love.load()
-    love.graphics.setBackgroundColor(115 / 255, 160 / 255, 30 / 255) -- verde
+    love.graphics.setBackgroundColor(115 / 255, 160 / 255, 30 / 255) -- green
 
     local cell_Size = 100
     local offset = cell_Size / 4
-    -- criar células para playerCells
+    -- create cells for player cells
     for i = 0, 2 do
         for j = 0, 2 do
             local x = window_Width / 2.7 + j * (cell_Size + offset)
@@ -99,7 +99,7 @@ function love.load()
             table.insert(playerCells, Cell(x, y, cell_Size))
         end
     end
-    -- criar células para enemyCells
+    -- create cells for enemy cells
     for i = 0, 2 do
         for j = 0, 2 do
             local x = window_Width / 2.7 + j * (cell_Size + offset)
@@ -110,7 +110,7 @@ function love.load()
 end
 
 --[[ 
-    Função para atualizar as atividades do programa 
+    Function to update the game logic
 ]]
 function love.update(dt)
     for _, player_Cell in pairs(playerCells) do
@@ -132,9 +132,8 @@ function love.update(dt)
     end
 
     if not roll and not player_Turn and computer_Waiting then
-        -- Incrementa o tempo de atraso
         computer_Delay = computer_Delay + dt
-        if computer_Delay >= 1 then -- Espera 1 segundo
+        if computer_Delay >= 1 then
             computerTurn()
             player_Turn = true
             roll = true
@@ -144,15 +143,15 @@ function love.update(dt)
 end
 
 --[[ 
-    Função para desenhar na tela 
+    Function to draw on the screen
 ]]
 function love.draw()
-    love.graphics.setColor(0, 0, 0) -- preto
+    love.graphics.setColor(0, 0, 0) -- black
     love.graphics.rectangle("fill", 30, 30, 100, 100)
-    love.graphics.setColor(0.5, 0.5, 0.5) -- cinza
+    love.graphics.setColor(0.5, 0.5, 0.5) -- grey
     love.graphics.rectangle("fill", 35, 35, 90, 90)
 
-    -- desenhar as células do jogador
+    -- draw the player matrix
     for _, cell in pairs(playerCells) do
         cell:draw()
         if cell.die_number ~= 0 then
@@ -162,7 +161,7 @@ function love.draw()
         end
     end
 
-    -- desenhar as células do inimigo
+    -- draw the enemy matrix
     for _, cell in pairs(enemyCells) do
         cell:draw()
         if cell.die_number ~= 0 then
