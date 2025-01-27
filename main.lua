@@ -5,7 +5,7 @@ local Cell = require("Cell")
 math.randomseed(os.time())
 
 
-local playerTurn = true
+local player_Turn = true
 local roll = true
 local die = Dice(6)
 
@@ -16,13 +16,26 @@ local playerCells = {}
 local enemyCells = {}
 
 function love.mousepressed(x, y, button, istouch, presses)
-    if playerTurn and (not roll) and button == 1 then
+    if player_Turn and (not roll) and button == 1 then
         for _,cell in pairs(playerCells) do
             if cell:checkPressed(x, y) then
                 -- logic for when a cell is Clicked
-                cell.die_number = die.getNumber()
-                roll = true
-                playerTurn = false
+                local target_Cell = cell
+                -- check if there are empty cells above 
+                for _, other_Cell in pairs(playerCells) do
+                    if other_Cell.x == cell.x and other_Cell.y < target_Cell.y and other_Cell.die_number == 0 then
+                        target_Cell = other_Cell
+                    end
+                end
+
+                -- if another cell above empty was found, draw the dice on that one
+                if target_Cell then
+                    target_Cell.die_number = die.getNumber()
+                    roll = true
+                    player_Turn = false
+                end
+
+                break
             end
         end
     end
@@ -65,7 +78,6 @@ function love.draw()
     love.graphics.rectangle("fill",30,30,100,100)
     love.graphics.setColor(0.5,0.5,0.5) -- grey
     love.graphics.rectangle("fill",35,35,90,90)
-    -- dice:draw(55,55,50,50)
 
     -- draw the player cells
     for _, cell in pairs(playerCells) do
