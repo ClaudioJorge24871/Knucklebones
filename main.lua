@@ -70,7 +70,7 @@ local function computerTurn()
         local target_Cell = nil
         for _, cell in pairs(enemyCells) do
             if cell.x == randomColumn and cell.die_number == 0 then
-                if not target_Cell or cell.y < target_Cell.y then
+                if not target_Cell or cell.y > target_Cell.y then
                     target_Cell = cell
                 end
             end
@@ -90,9 +90,32 @@ local function checkDieCollision()
         for _, enemy_Cell in pairs(enemyCells) do
             if player_Cell.x == enemy_Cell.x and player_Cell.die_number == enemy_Cell.die_number then
                 if not player_Turn then
-                    enemy_Cell.die_number = 0
+                    enemy_Cell.die_number = 0 -- resets the current cell
+
+                    -- check if there are die "above" the one destroyed
+                    for i = #enemyCells, 1, -1 do
+                        local cell = enemyCells[i] 
+                        if cell.x == enemy_Cell.x and cell.y < enemy_Cell.y and cell.die_number ~= 0 then
+                            -- bring down those dies
+                            local temp = cell.die_number
+                            cell.die_number = enemy_Cell.die_number
+                            enemy_Cell.die_number = temp
+                            enemy_Cell = cell
+                        end
+                    end
                 else
                     player_Cell.die_number = 0
+                    
+                    -- check if there are die "bellow" the one destroyed
+                    for i = 1, #playerCells do
+                        local cell = playerCells[i]
+                        if cell.x == player_Cell.x and cell.y > player_Cell.y and cell.die_number ~= 0 then
+                            local temp = cell.die_number
+                            cell.die_number = player_Cell.die_number
+                            player_Cell.die_number = temp
+                            player_Cell = cell
+                        end
+                    end
                 end
             end
         end
