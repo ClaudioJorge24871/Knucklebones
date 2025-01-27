@@ -17,27 +17,31 @@ local playerCells = {}
 local enemyCells = {}
 
 function love.mousepressed(x, y, button, istouch, presses)
+    --[[
+    
+        IMPROVE THE LOGIC WHEN WE CLICK A CELL THAT IS ALREADY FILLED
+    ]]
     if player_Turn and (not roll) and button == 1 then
         for _,cell in pairs(playerCells) do
             if cell:checkPressed(x, y) then
                 -- logic for when a cell is Clicked
                 local target_Cell = cell
-                -- check if there are empty cells above 
-                for _, other_Cell in pairs(playerCells) do
-                    if target_Cell.die_number ~= 0 then
+                if target_Cell.die_number == 0 then
+                    -- check if there are empty cells above 
+                    for _, other_Cell in pairs(playerCells) do
                         if other_Cell.x == cell.x and other_Cell.y < target_Cell.y and other_Cell.die_number == 0 then
                             target_Cell = other_Cell
                         end
                     end
-                end
 
-                -- if another cell above empty was found, draw the dice on that one
-                if target_Cell then
-                    target_Cell.die_number = die.getNumber()
-                    roll = true
-                    player_Turn = false
-                end
-                break
+                    -- if another cell above empty was found, draw the dice on that one
+                    if target_Cell then
+                        target_Cell.die_number = die.getNumber()
+                        roll = true
+                        player_Turn = false
+                    end
+                    break
+                    end
             end
         end
     end
