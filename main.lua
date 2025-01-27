@@ -5,29 +5,37 @@ local Cell = require("Cell")
 
 math.randomseed(os.time())
 
-local player_Turn = true
 local roll = true
 local die = Dice(6)
+
+local player = {
+    player_Turn = true,
+    playerCells = {},
+    points = 0
+}
+
+local enemy = {
+    enemyCells = {},
+    points = 0
+}
 
 local window_Width = love.graphics.getWidth()
 local window_Height = love.graphics.getHeight()
 
-local playerCells = {}
-local enemyCells = {}
 
 -- Time variables
 local computer_Delay = 0
 local computer_Waiting = false 
 
 function love.mousepressed(x, y, button, istouch, presses)
-    if player_Turn and (not roll) and button == 1 then
-        for _, cell in pairs(playerCells) do
+    if player.player_Turn and (not roll) and button == 1 then
+        for _, cell in pairs(player.playerCells) do
             if cell:checkPressed(x, y) then
                 -- logic for when a cell is clicked
                 local target_Cell = cell
                 if target_Cell.die_number == 0 then
                     -- checks if there are empty cells above 
-                    for _, other_Cell in pairs(playerCells) do
+                    for _, other_Cell in pairs(player.playerCells) do
                         if other_Cell.x == cell.x and other_Cell.y < target_Cell.y and other_Cell.die_number == 0 then
                             target_Cell = other_Cell
                         end
@@ -37,7 +45,7 @@ function love.mousepressed(x, y, button, istouch, presses)
                     if target_Cell then
                         target_Cell.die_number = die.getNumber()
                         roll = true
-                        player_Turn = false
+                        player.player_Turn = false
                         computer_Waiting = true 
                         computer_Delay = 0 
                     end
@@ -53,7 +61,7 @@ end
 ]]
 local function computerTurn()
     local available_Columns = {}
-    for _, cell in pairs(enemyCells) do
+    for _, cell in pairs(enemy.enemyCells) do
         if cell.die_number == 0 then
             available_Columns[cell.x] = true
         end
@@ -68,7 +76,7 @@ local function computerTurn()
         local randomColumn = columnKeys[math.random(1, #columnKeys)]
 
         local target_Cell = nil
-        for _, cell in pairs(enemyCells) do
+        for _, cell in pairs(enemy.enemyCells) do
             if cell.x == randomColumn and cell.die_number == 0 then
                 if not target_Cell or cell.y > target_Cell.y then
                     target_Cell = cell
@@ -82,19 +90,19 @@ local function computerTurn()
         end
     end
 
-    player_Turn = true
+    player.player_Turn = true
 end
 
 local function checkDieCollision()
-    for _, player_Cell in pairs(playerCells) do
-        for _, enemy_Cell in pairs(enemyCells) do
+    for _, player_Cell in pairs(player.playerCells) do
+        for _, enemy_Cell in pairs(enemy.enemyCells) do
             if player_Cell.x == enemy_Cell.x and player_Cell.die_number == enemy_Cell.die_number then
-                if not player_Turn then
+                if not player.player_Turn then
                     enemy_Cell.die_number = 0 -- resets the current cell
 
                     -- check if there are die "above" the one destroyed
-                    for i = #enemyCells, 1, -1 do
-                        local cell = enemyCells[i] 
+                    for i = #enemy.enemyCells, 1, -1 do
+                        local cell = enemy.enemyCells[i] 
                         if cell.x == enemy_Cell.x and cell.y < enemy_Cell.y and cell.die_number ~= 0 then
                             -- bring down those dies
                             local temp = cell.die_number
@@ -107,8 +115,8 @@ local function checkDieCollision()
                     player_Cell.die_number = 0
                     
                     -- check if there are die "bellow" the one destroyed
-                    for i = 1, #playerCells do
-                        local cell = playerCells[i]
+                    for i = 1, #player.playerCells do
+                        local cell = player.playerCells[i]
                         if cell.x == player_Cell.x and cell.y > player_Cell.y and cell.die_number ~= 0 then
                             local temp = cell.die_number
                             cell.die_number = player_Cell.die_number
@@ -135,7 +143,7 @@ function love.load()
         for j = 0, 2 do
             local x = window_Width / 2.7 + j * (cell_Size + offset)
             local y = window_Height / 1.7 + i * (cell_Size + offset)
-            table.insert(playerCells, Cell(x, y, cell_Size))
+            table.insert(player.playerCells, Cell(x, y, cell_Size))
         end
     end
     -- create cells for enemy cells
@@ -143,7 +151,7 @@ function love.load()
         for j = 0, 2 do
             local x = window_Width / 2.7 + j * (cell_Size + offset)
             local y = 10 + i * (cell_Size + offset)
-            table.insert(enemyCells, Cell(x, y, cell_Size))
+            table.insert(enemy.enemyCells, Cell(x, y, cell_Size))
         end
     end
 end
@@ -159,7 +167,7 @@ function love.update(dt)
         roll = false
     end
 
-    if not roll and not player_Turn and computer_Waiting then
+    if not roll and not player.player_Turn and computer_Waiting then
         computer_Delay = computer_Delay + dt
         if computer_Delay >= 0.5 then
             computerTurn()
@@ -181,7 +189,7 @@ function love.draw()
     love.graphics.rectangle("fill", 35, 35, 90, 90)
 
     -- draw the player matrix
-    for _, cell in pairs(playerCells) do
+    for _, cell in pairs(player.playerCells) do
         cell:draw()
         if cell.die_number ~= 0 then
             local cell_Die = Dice(cell.die_number)
@@ -191,7 +199,7 @@ function love.draw()
     end
 
     -- draw the enemy matrix
-    for _, cell in pairs(enemyCells) do
+    for _, cell in pairs(enemy.enemyCells) do
         cell:draw()
         if cell.die_number ~= 0 then
             local cell_Die = Dice(cell.die_number)
