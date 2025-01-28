@@ -46,7 +46,7 @@ function Button(_text, _func, _func_Param, _width, _height)
             love.graphics.rectangle("fill", self.button_X, self.button_Y, self.width, self.height)
 
             love.graphics.setColor(text_Color)
-            love.graphics.print(self.text_X, self.text_X, self.text_Y)
+            love.graphics.print(self.text, self.text_X, self.text_Y)
 
             love.graphics.setColor(1,1,1) -- "resetting" color
 

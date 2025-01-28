@@ -2,11 +2,20 @@ local love = require("love")
 local socket = require 'socket'
 local Dice = require("Dice")
 local Cell = require("Cell")
+local Button = require("Button")
 
 math.randomseed(os.time())
 
 local roll = true
 local die = Dice(6)
+
+local window_Width = love.graphics.getWidth()
+local window_Height = love.graphics.getHeight()
+
+-- Time variables
+local computer_Delay = 0
+local computer_Waiting = false 
+
 
 local player = {
     player_Turn = true,
@@ -27,13 +36,12 @@ local game = {
     }
 }
 
-local window_Width = love.graphics.getWidth()
-local window_Height = love.graphics.getHeight()
+local buttons = {
+    menu_State = {},
+    running_State = {},
+    ended_State = {}
+} 
 
-
--- Time variables
-local computer_Delay = 0
-local computer_Waiting = false 
 
 --[[
     Function to help increment points when a combo occurs
@@ -104,7 +112,11 @@ function love.mousepressed(x, y, button, istouch, presses)
                     end
                 end
             end
-        end 
+        end
+    elseif game.state["menu"] then
+        for index in pairs(buttons.menu_State) do
+            buttons.menu_State[index]:checkPressed(x,y)
+        end
     end
 end
 
@@ -147,6 +159,9 @@ local function computerTurn()
     player.player_Turn = true
 end
 
+--[[
+    Check if a die collision as occured after a play 
+]]
 local function checkDieCollision()
     for _, player_Cell in pairs(player.playerCells) do
         for _, enemy_Cell in pairs(enemy.enemyCells) do
@@ -188,12 +203,25 @@ local function checkDieCollision()
     end
 end
 
+--[[
+    Starts a new game
+    Used on main menu and replay game
+]]
+local function startNewGame()
+    
+end
+
 --[[ 
     Function to load the inital data
 ]]
 function love.load()
     love.graphics.setBackgroundColor(115 / 255, 160 / 255, 30 / 255) -- green
+    -- Creation of menu buttons 
+    buttons.menu_State.play_Game = Button("Play Game",startNewGame,nil,120,40)
+    buttons.menu_State.settings = Button("Settings",nil,nil,120,40)
+    buttons.menu_State.exit_Game = Button("Exit",love.event.quit,nil,120,40)
 
+    -- Creation of Cells 
     local cell_Size = 100
     local offset = cell_Size / 4
     -- create cells for player cells
@@ -241,7 +269,12 @@ end
     Function to draw on the screen
 ]]
 function love.draw()
-    if game.state["running"] then
+    if game.state["menu"] then
+        -- if we are on menu state, draw the menu buttons created on love.local
+        buttons.menu_State.play_Game:draw(30,20,35,25,{0.6,0.6,0.6},{0,0,0})
+        buttons.menu_State.settings:draw(30,80,35,85,{0.6,0.6,0.6},{0,0,0})
+        buttons.menu_State.exit_Game:draw(30,140,35,145,{0.6,0.6,0.6},{0,0,0})
+    elseif game.state["running"] then
         love.graphics.setColor(0, 0, 0) -- black
         love.graphics.rectangle("fill", 30, 30, 100, 100)
         love.graphics.setColor(0.5, 0.5, 0.5) -- grey
