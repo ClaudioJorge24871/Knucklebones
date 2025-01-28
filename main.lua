@@ -19,6 +19,14 @@ local enemy = {
     points = 0
 }
 
+local game = {
+    state = {
+        menu = true,
+        running = false,
+        ended = false
+    }
+}
+
 local window_Width = love.graphics.getWidth()
 local window_Height = love.graphics.getHeight()
 
@@ -68,33 +76,35 @@ end
     can be seen as the player turn function
 ]]
 function love.mousepressed(x, y, button, istouch, presses)
-    if player.player_Turn and (not roll) and button == 1 then
-        for _, cell in pairs(player.playerCells) do
-            if cell:checkPressed(x, y) then
-                -- logic for when a cell is clicked
-                local target_Cell = cell
-                if target_Cell.die_number == 0 then
-                    -- checks if there are empty cells above 
-                    for _, other_Cell in pairs(player.playerCells) do
-                        if other_Cell.x == cell.x and other_Cell.y < target_Cell.y and other_Cell.die_number == 0 then
-                            target_Cell = other_Cell
+    if game.state["running"] then
+        if player.player_Turn and (not roll) and button == 1 then
+            for _, cell in pairs(player.playerCells) do
+                if cell:checkPressed(x, y) then
+                    -- logic for when a cell is clicked
+                    local target_Cell = cell
+                    if target_Cell.die_number == 0 then
+                        -- checks if there are empty cells above 
+                        for _, other_Cell in pairs(player.playerCells) do
+                            if other_Cell.x == cell.x and other_Cell.y < target_Cell.y and other_Cell.die_number == 0 then
+                                target_Cell = other_Cell
+                            end
                         end
+    
+                        -- if a empty cell was found above, draw on that cell
+                        if target_Cell then
+                            target_Cell.die_number = die.getNumber()
+                            -- increment the player points when placing a die
+                            player.points = player.points + checkComboPoints("player",target_Cell.x,target_Cell.y,target_Cell.die_number)
+                            roll = true
+                            player.player_Turn = false
+                            computer_Waiting = true 
+                            computer_Delay = 0 
+                        end
+                        break
                     end
-
-                    -- if a empty cell was found above, draw on that cell
-                    if target_Cell then
-                        target_Cell.die_number = die.getNumber()
-                        -- increment the player points when placing a die
-                        player.points = player.points + checkComboPoints("player",target_Cell.x,target_Cell.y,target_Cell.die_number)
-                        roll = true
-                        player.player_Turn = false
-                        computer_Waiting = true 
-                        computer_Delay = 0 
-                    end
-                    break
                 end
             end
-        end
+        end 
     end
 end
 
@@ -231,47 +241,47 @@ end
     Function to draw on the screen
 ]]
 function love.draw()
-    love.graphics.setColor(0, 0, 0) -- black
-    love.graphics.rectangle("fill", 30, 30, 100, 100)
-    love.graphics.setColor(0.5, 0.5, 0.5) -- grey
-    love.graphics.rectangle("fill", 35, 35, 90, 90)
-
-    -- draw the player matrix
-    for _, cell in pairs(player.playerCells) do
-        cell:draw()
-        if cell.die_number ~= 0 then
-            local cell_Die = Dice(cell.die_number)
-            local offset = 10
-            cell_Die:draw(cell.x + offset, cell.y + offset, 80, 80)
+    if game.state["running"] then
+        love.graphics.setColor(0, 0, 0) -- black
+        love.graphics.rectangle("fill", 30, 30, 100, 100)
+        love.graphics.setColor(0.5, 0.5, 0.5) -- grey
+        love.graphics.rectangle("fill", 35, 35, 90, 90)
+    
+        -- draw the player matrix
+        for _, cell in pairs(player.playerCells) do
+            cell:draw()
+            if cell.die_number ~= 0 then
+                local cell_Die = Dice(cell.die_number)
+                local offset = 10
+                cell_Die:draw(cell.x + offset, cell.y + offset, 80, 80)
+            end
         end
-    end
-
-    -- draw the enemy matrix
-    for _, cell in pairs(enemy.enemyCells) do
-        cell:draw()
-        if cell.die_number ~= 0 then
-            local cell_Die = Dice(cell.die_number)
-            local offset = 10
-            cell_Die:draw(cell.x + offset, cell.y + offset, 80, 80)
+    
+        -- draw the enemy matrix
+        for _, cell in pairs(enemy.enemyCells) do
+            cell:draw()
+            if cell.die_number ~= 0 then
+                local cell_Die = Dice(cell.die_number)
+                local offset = 10
+                cell_Die:draw(cell.x + offset, cell.y + offset, 80, 80)
+            end
         end
+    
+        -- draw the enemy points
+        local last_Cell = enemy.enemyCells[#enemy.enemyCells]
+        local points_Text_X = last_Cell.x + last_Cell.size + 5
+        local points_Text_Y = last_Cell.y + last_Cell.size - 12
+        love.graphics.setColor(1,1,1)
+        love.graphics.print("Enemy points: "..enemy.points, points_Text_X, points_Text_Y)
+    
+        -- draw the player points
+        local first_Cell = player.playerCells[1]
+        local points_Text_X = first_Cell.x - first_Cell.size
+        local points_Text_Y = first_Cell.y
+        love.graphics.setColor(1,1,1)
+        love.graphics.print("Player points: "..player.points, points_Text_X, points_Text_Y)
+    
+        -- draw the Die
+        die:draw(40, 40, 80, 80) 
     end
-
-    -- draw the enemy points
-    local last_Cell = enemy.enemyCells[#enemy.enemyCells]
-    local points_Text_X = last_Cell.x + last_Cell.size + 5
-    local points_Text_Y = last_Cell.y + last_Cell.size - 12
-    love.graphics.setColor(1,1,1)
-    love.graphics.print("Enemy points: "..enemy.points, points_Text_X, points_Text_Y)
-
-    -- draw the player points
-    local first_Cell = player.playerCells[1]
-    local points_Text_X = first_Cell.x - first_Cell.size
-    local points_Text_Y = first_Cell.y
-    love.graphics.setColor(1,1,1)
-    love.graphics.print("Player points: "..player.points, points_Text_X, points_Text_Y)
-
-    -- draw the Die
-    die:draw(40, 40, 80, 80)
-   
-
 end
