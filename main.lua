@@ -203,12 +203,18 @@ local function checkDieCollision()
     end
 end
 
+local function changeGameState(state)
+    game.state["menu"] = state == "menu"
+    game.state["running"] = state == "running"
+    game.state["ended"] = state == "ended"
+end
+
 --[[
     Starts a new game
     Used on main menu and replay game
 ]]
 local function startNewGame()
-    
+    changeGameState("running")
 end
 
 --[[ 
