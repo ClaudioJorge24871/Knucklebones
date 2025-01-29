@@ -49,7 +49,12 @@ local styles = {
         grey = {0.5, 0.5, 0.5},
     },
     fonts = {
-
+        title = {
+            font_Size = 48
+        },
+        default_Font = {
+            font_Size = 16
+        }
     }
 }
 
@@ -238,6 +243,9 @@ function love.load()
     buttons.menu_State.settings = Button("Settings",nil,nil,120,40)
     buttons.menu_State.exit_Game = Button("Exit",love.event.quit,nil,120,40)
 
+    -- Using game title font for menu  
+    styles.fonts.title.font = love.graphics.newFont('/fonts/ANUNEDW_.TTF',styles.fonts.title.font_Size)
+    styles.fonts.default_Font.font = love.graphics.getFont()
     -- Creation of Cells 
     local cell_Size = 100
     local offset = cell_Size / 4
@@ -291,6 +299,12 @@ function love.draw()
         buttons.menu_State.play_Game:draw(30,20,35,25,styles.colors.grey,styles.colors.black)
         buttons.menu_State.settings:draw(30,80,35,85,styles.colors.grey,styles.colors.black)
         buttons.menu_State.exit_Game:draw(30,140,35,145,styles.colors.grey,styles.colors.black)
+
+        -- Draw the title 
+        love.graphics.setFont(styles.fonts.title.font)
+        love.graphics.printf("Knucklebones",100,100, window_Width, "center")
+        love.graphics.setFont(styles.fonts.default_Font.font) -- reset to default font
+        
     elseif game.state["running"] then
         love.graphics.setColor(styles.colors.black)
         love.graphics.rectangle("fill", 30, 30, 100, 100)
