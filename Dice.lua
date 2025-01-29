@@ -27,13 +27,15 @@ function Dice(_number)
         }
     
         for _,position in pairs(dot_positions[number]) do
-            love.graphics.circle("fill",position[1],position[2],dot_Radius)
+            love.graphics.circle("fill",position[1],position[2],dot_Radius,30)
         end
     end
 
     return{
         -- draw the die given coordinates and size
         draw = function(self, x_Pos, y_Pos, width, height)
+            love.graphics.setColor(0, 0, 0) -- black
+            love.graphics.rectangle("fill", x_Pos + 5, y_Pos + 5, width, height) -- shadow 
             love.graphics.setColor(1, 1, 1) -- white
             love.graphics.rectangle("fill", x_Pos, y_Pos, width, height)
             love.graphics.setColor(0, 0, 0) -- black

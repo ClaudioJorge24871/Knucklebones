@@ -43,11 +43,14 @@ local buttons = {
     ended_State = {}
 } 
 
-local styles = {
+_G.styles = {
     colors = {
         black = {0,0,0},
         white = {1,1,1},
         grey = {0.5, 0.5, 0.5},
+        blue = {18 / 255, 108 / 255, 248 / 255},
+        red = {248 / 255, 39 / 255, 18 / 255},
+        purple = {196/255, 18 / 255, 248 / 255}
     },
     fonts = {
         title = {
@@ -55,6 +58,9 @@ local styles = {
         },
         default_Font = {
             font_Size = 16
+        },
+        buttons = {
+            font_Size = 30
         }
     }
 }
@@ -248,6 +254,7 @@ function love.load()
     -- Using game title font for menu  
     styles.fonts.title.font = love.graphics.newFont('/fonts/ANUNEDW_.TTF',styles.fonts.title.font_Size)
     styles.fonts.default_Font.font = love.graphics.getFont()
+    styles.fonts.buttons.font = love.graphics.newFont('/fonts/BebasNeue-Regular.TTF',styles.fonts.buttons.font_Size)
 
     -- Giving value to die of menu
     local random_number = math.random(1,6)
@@ -278,37 +285,43 @@ end
     Function to update the game logic
 ]]
 function love.update(dt)
-
-    if roll then
-        local number = math.random(1, 6)
-        die = Dice(number)
-        roll = false
-    end
-
-    if not roll and not game.player_Turn and computer_Waiting then
-        computer_Delay = computer_Delay + dt
-        if computer_Delay >= 0.5 then
-            computerTurn()
-            roll = true
-            computer_Waiting = false
+    if game.state["menu"] then
+        for index in pairs(buttons.menu_State) do
+            local mouse_X , mouse_Y = love.mouse.getPosition()
+            buttons.menu_State[index]:checkHover(mouse_X, mouse_Y)
         end
-    end
+    elseif game.state["running"] then
+        if roll then
+            local number = math.random(1, 6)
+            die = Dice(number)
+            roll = false
+        end
 
-    checkDieCollision() -- checking if there are die collision
+        if not roll and not game.player_Turn and computer_Waiting then
+            computer_Delay = computer_Delay + dt
+            if computer_Delay >= 0.5 then
+                computerTurn()
+                roll = true
+                computer_Waiting = false
+            end
+        end
+
+        checkDieCollision() -- checking if there are die collision
+    end
 end
 
 --[[ 
     Function to draw on the screen
 ]]
 function love.draw()
-    if game.state["menu"] then
-        -- draw the background_image
-        love.graphics.setBackgroundColor(1,1,1)
-        love.graphics.setColor(1,1,1,1)
-        love.graphics.draw(menu_background_image)
+    -- draw the background_image
+    love.graphics.setBackgroundColor(1,1,1)
+    love.graphics.setColor(1,1,1,1)
+    love.graphics.draw(menu_background_image)
 
+    if game.state["menu"] then
         -- if we are on menu state, draw the menu buttons created on love.local
-        buttons.menu_State.play_Game:draw(window_Width / 4,window_Height / 1.2,window_Width / 4 + 10,window_Height / 1.2 + 10, styles.colors.grey,styles.colors.black)
+        buttons.menu_State.play_Game:draw(window_Width / 4,window_Height / 1.2,window_Width / 4 + 10,window_Height / 1.2 + 10, styles.colors.blue,styles.colors.white)
         buttons.menu_State.settings:draw(30,80,35,85,styles.colors.grey,styles.colors.black)
         buttons.menu_State.exit_Game:draw(30,140,35,145,styles.colors.grey,styles.colors.black)
 
@@ -321,10 +334,6 @@ function love.draw()
         die:draw(window_Width / 2 - 70 , 150 , 100, 100)      
         
     elseif game.state["running"] then
-        love.graphics.setColor(styles.colors.black)
-        love.graphics.rectangle("fill", 30, 30, 100, 100)
-        love.graphics.setColor(styles.colors.grey) -- grey
-        love.graphics.rectangle("fill", 35, 35, 90, 90)
     
         -- draw the player matrix
         for _, cell in pairs(player.playerCells) do
@@ -361,6 +370,6 @@ function love.draw()
         love.graphics.print("Player points: "..player.points, points_Text_X, points_Text_Y)
     
         -- draw the Die
-        die:draw(40, 40, 80, 80) 
+        die:draw(40, window_Height / 2, 100, 100) 
     end
 end
