@@ -18,7 +18,6 @@ local computer_Waiting = false
 
 
 local player = {
-    player_Turn = true,
     playerCells = {},
     points = 0
 }
@@ -29,6 +28,7 @@ local enemy = {
 }
 
 local game = {
+    player_Turn = true,
     state = {
         menu = true,
         running = false,
@@ -85,7 +85,7 @@ end
 ]]
 function love.mousepressed(x, y, button, istouch, presses)
     if game.state["running"] then
-        if player.player_Turn and (not roll) and button == 1 then
+        if game.player_Turn and (not roll) and button == 1 then
             for _, cell in pairs(player.playerCells) do
                 if cell:checkPressed(x, y) then
                     -- logic for when a cell is clicked
@@ -104,7 +104,7 @@ function love.mousepressed(x, y, button, istouch, presses)
                             -- increment the player points when placing a die
                             player.points = player.points + checkComboPoints("player",target_Cell.x,target_Cell.y,target_Cell.die_number)
                             roll = true
-                            player.player_Turn = false
+                            game.player_Turn = false
                             computer_Waiting = true 
                             computer_Delay = 0 
                         end
@@ -156,7 +156,7 @@ local function computerTurn()
         end
     end
 
-    player.player_Turn = true
+    game.player_Turn = true
 end
 
 --[[
@@ -166,7 +166,7 @@ local function checkDieCollision()
     for _, player_Cell in pairs(player.playerCells) do
         for _, enemy_Cell in pairs(enemy.enemyCells) do
             if player_Cell.x == enemy_Cell.x and player_Cell.die_number == enemy_Cell.die_number then
-                if not player.player_Turn then
+                if not game.player_Turn then
                     -- decreasing the points from enemy
                     enemy.points = enemy.points - checkComboPoints("enemy",enemy_Cell.x,enemy_Cell.y,enemy_Cell.die_number)
                     enemy_Cell.die_number = 0 -- resets the current cell
@@ -259,7 +259,7 @@ function love.update(dt)
         roll = false
     end
 
-    if not roll and not player.player_Turn and computer_Waiting then
+    if not roll and not game.player_Turn and computer_Waiting then
         computer_Delay = computer_Delay + dt
         if computer_Delay >= 0.5 then
             computerTurn()
