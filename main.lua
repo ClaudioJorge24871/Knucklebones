@@ -8,6 +8,7 @@ math.randomseed(os.time())
 
 local roll = true
 local die = Dice(0)
+local menu_background_image = nil
 
 local window_Width = love.graphics.getWidth()
 local window_Height = love.graphics.getHeight()
@@ -238,7 +239,7 @@ end
     Function to load the inital data
 ]]
 function love.load()
-    love.graphics.setBackgroundColor(115 / 255, 160 / 255, 30 / 255) -- green
+    menu_background_image = love.graphics.newImage('/images/background_image.jpg')
     -- Creation of menu buttons 
     buttons.menu_State.play_Game = Button("Play Game",startNewGame,nil,200,60)
     buttons.menu_State.settings = Button("Settings",nil,nil,200,60)
@@ -301,6 +302,11 @@ end
 ]]
 function love.draw()
     if game.state["menu"] then
+        -- draw the background_image
+        love.graphics.setBackgroundColor(1,1,1)
+        love.graphics.setColor(1,1,1,1)
+        love.graphics.draw(menu_background_image)
+
         -- if we are on menu state, draw the menu buttons created on love.local
         buttons.menu_State.play_Game:draw(window_Width / 4,window_Height / 1.2,window_Width / 4 + 10,window_Height / 1.2 + 10, styles.colors.grey,styles.colors.black)
         buttons.menu_State.settings:draw(30,80,35,85,styles.colors.grey,styles.colors.black)
@@ -312,7 +318,6 @@ function love.draw()
         love.graphics.setFont(styles.fonts.default_Font.font) -- reset to default font
 
         -- Draw a random die
-        
         die:draw(window_Width / 2 - 70 , 150 , 100, 100)      
         
     elseif game.state["running"] then
