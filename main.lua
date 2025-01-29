@@ -7,7 +7,7 @@ local Button = require("Button")
 math.randomseed(os.time())
 
 local roll = true
-local die = Dice(6)
+local die = Dice(0)
 
 local window_Width = love.graphics.getWidth()
 local window_Height = love.graphics.getHeight()
@@ -50,7 +50,7 @@ local styles = {
     },
     fonts = {
         title = {
-            font_Size = 48
+            font_Size = 80
         },
         default_Font = {
             font_Size = 16
@@ -231,6 +231,7 @@ end
 ]]
 local function startNewGame()
     changeGameState("running")
+    roll = true
 end
 
 --[[ 
@@ -239,13 +240,18 @@ end
 function love.load()
     love.graphics.setBackgroundColor(115 / 255, 160 / 255, 30 / 255) -- green
     -- Creation of menu buttons 
-    buttons.menu_State.play_Game = Button("Play Game",startNewGame,nil,120,40)
-    buttons.menu_State.settings = Button("Settings",nil,nil,120,40)
-    buttons.menu_State.exit_Game = Button("Exit",love.event.quit,nil,120,40)
+    buttons.menu_State.play_Game = Button("Play Game",startNewGame,nil,200,60)
+    buttons.menu_State.settings = Button("Settings",nil,nil,200,60)
+    buttons.menu_State.exit_Game = Button("Exit",love.event.quit,nil,200,60)
 
     -- Using game title font for menu  
     styles.fonts.title.font = love.graphics.newFont('/fonts/ANUNEDW_.TTF',styles.fonts.title.font_Size)
     styles.fonts.default_Font.font = love.graphics.getFont()
+
+    -- Giving value to die of menu
+    local random_number = math.random(1,6)
+    die = Dice(random_number)
+
     -- Creation of Cells 
     local cell_Size = 100
     local offset = cell_Size / 4
@@ -296,14 +302,18 @@ end
 function love.draw()
     if game.state["menu"] then
         -- if we are on menu state, draw the menu buttons created on love.local
-        buttons.menu_State.play_Game:draw(30,20,35,25,styles.colors.grey,styles.colors.black)
+        buttons.menu_State.play_Game:draw(window_Width / 4,window_Height / 1.2,window_Width / 4 + 10,window_Height / 1.2 + 10, styles.colors.grey,styles.colors.black)
         buttons.menu_State.settings:draw(30,80,35,85,styles.colors.grey,styles.colors.black)
         buttons.menu_State.exit_Game:draw(30,140,35,145,styles.colors.grey,styles.colors.black)
 
         -- Draw the title 
         love.graphics.setFont(styles.fonts.title.font)
-        love.graphics.printf("Knucklebones",100,100, window_Width, "center")
+        love.graphics.printf("Knucklebones",window_Width / 2 - 16 * 20 ,20, window_Width, "left")
         love.graphics.setFont(styles.fonts.default_Font.font) -- reset to default font
+
+        -- Draw a random die
+        
+        die:draw(window_Width / 2 - 70 , 150 , 100, 100)      
         
     elseif game.state["running"] then
         love.graphics.setColor(styles.colors.black)
