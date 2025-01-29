@@ -247,9 +247,9 @@ end
 function love.load()
     menu_background_image = love.graphics.newImage('/images/background_image.jpg')
     -- Creation of menu buttons 
-    buttons.menu_State.play_Game = Button("Play Game",startNewGame,nil,200,60)
-    buttons.menu_State.settings = Button("Settings",nil,nil,200,60)
-    buttons.menu_State.exit_Game = Button("Exit",love.event.quit,nil,200,60)
+    buttons.menu_State.play_Game = Button("Play Game",startNewGame,nil,180,60)
+    buttons.menu_State.settings = Button("Settings",nil,nil,180,60)
+    buttons.menu_State.exit_Game = Button("Exit",love.event.quit,nil,180,60)
 
     -- Using game title font for menu  
     styles.fonts.title.font = love.graphics.newFont('/fonts/ANUNEDW_.TTF',styles.fonts.title.font_Size)
@@ -321,9 +321,9 @@ function love.draw()
 
     if game.state["menu"] then
         -- if we are on menu state, draw the menu buttons created on love.local
-        buttons.menu_State.play_Game:draw(window_Width / 4,window_Height / 1.2,window_Width / 4 + 10,window_Height / 1.2 + 10, styles.colors.blue,styles.colors.white)
-        buttons.menu_State.settings:draw(30,80,35,85,styles.colors.grey,styles.colors.black)
-        buttons.menu_State.exit_Game:draw(30,140,35,145,styles.colors.grey,styles.colors.black)
+        buttons.menu_State.play_Game:draw(window_Width / 3.5,window_Height / 1.2,window_Width / 3.5 + 8, window_Height / 1.2 + 10, styles.colors.blue,styles.colors.white)
+        buttons.menu_State.settings:draw(window_Width / 2.35,window_Height / 1.2,window_Width / 2.35 + 8, window_Height / 1.2 + 10, styles.colors.purple,styles.colors.white)
+        buttons.menu_State.exit_Game:draw(window_Width / 1.76, window_Height / 1.2, window_Width / 1.76 + 8, window_Height / 1.2 + 10, styles.colors.red, styles.colors.white)
 
         -- Draw the title 
         love.graphics.setFont(styles.fonts.title.font)
@@ -331,7 +331,7 @@ function love.draw()
         love.graphics.setFont(styles.fonts.default_Font.font) -- reset to default font
 
         -- Draw a random die
-        die:draw(window_Width / 2 - 70 , 150 , 100, 100)      
+        die:draw(window_Width / 2 - 70 , 200 , 100, 100)      
         
     elseif game.state["running"] then
     

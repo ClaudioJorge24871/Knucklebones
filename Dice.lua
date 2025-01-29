@@ -34,11 +34,11 @@ function Dice(_number)
     return{
         -- draw the die given coordinates and size
         draw = function(self, x_Pos, y_Pos, width, height)
-            love.graphics.setColor(0, 0, 0) -- black
+            love.graphics.setColor(styles.colors.white) -- white
             love.graphics.rectangle("fill", x_Pos + 5, y_Pos + 5, width, height) -- shadow 
-            love.graphics.setColor(1, 1, 1) -- white
             love.graphics.rectangle("fill", x_Pos, y_Pos, width, height)
-            love.graphics.setColor(0, 0, 0) -- black
+            love.graphics.setColor(styles.colors.black) -- black
+            love.graphics.rectangle("line",x_Pos - 2, y_Pos - 2, width + 2, height + 2)
             draw_helper(x_Pos,y_Pos,width,height)
         end,
 
