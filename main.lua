@@ -42,6 +42,17 @@ local buttons = {
     ended_State = {}
 } 
 
+local styles = {
+    colors = {
+        black = {0,0,0},
+        white = {1,1,1},
+        grey = {0.5, 0.5, 0.5},
+    },
+    fonts = {
+
+    }
+}
+
 
 --[[
     Function to help increment points when a combo occurs
@@ -277,13 +288,13 @@ end
 function love.draw()
     if game.state["menu"] then
         -- if we are on menu state, draw the menu buttons created on love.local
-        buttons.menu_State.play_Game:draw(30,20,35,25,{0.6,0.6,0.6},{0,0,0})
-        buttons.menu_State.settings:draw(30,80,35,85,{0.6,0.6,0.6},{0,0,0})
-        buttons.menu_State.exit_Game:draw(30,140,35,145,{0.6,0.6,0.6},{0,0,0})
+        buttons.menu_State.play_Game:draw(30,20,35,25,styles.colors.grey,styles.colors.black)
+        buttons.menu_State.settings:draw(30,80,35,85,styles.colors.grey,styles.colors.black)
+        buttons.menu_State.exit_Game:draw(30,140,35,145,styles.colors.grey,styles.colors.black)
     elseif game.state["running"] then
-        love.graphics.setColor(0, 0, 0) -- black
+        love.graphics.setColor(styles.colors.black)
         love.graphics.rectangle("fill", 30, 30, 100, 100)
-        love.graphics.setColor(0.5, 0.5, 0.5) -- grey
+        love.graphics.setColor(styles.colors.grey) -- grey
         love.graphics.rectangle("fill", 35, 35, 90, 90)
     
         -- draw the player matrix
@@ -310,14 +321,14 @@ function love.draw()
         local last_Cell = enemy.enemyCells[#enemy.enemyCells]
         local points_Text_X = last_Cell.x + last_Cell.size + 5
         local points_Text_Y = last_Cell.y + last_Cell.size - 12
-        love.graphics.setColor(1,1,1)
+        love.graphics.setColor(styles.colors.white)
         love.graphics.print("Enemy points: "..enemy.points, points_Text_X, points_Text_Y)
     
         -- draw the player points
         local first_Cell = player.playerCells[1]
         local points_Text_X = first_Cell.x - first_Cell.size
         local points_Text_Y = first_Cell.y
-        love.graphics.setColor(1,1,1)
+        love.graphics.setColor(styles.colors.white)
         love.graphics.print("Player points: "..player.points, points_Text_X, points_Text_Y)
     
         -- draw the Die
