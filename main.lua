@@ -234,7 +234,7 @@ function love.load()
     for i = 0, 2 do
         for j = 0, 2 do
             local x = window_Width / 2.7 + j * (cell_Size + offset)
-            local y = window_Height / 1.7 + i * (cell_Size + offset)
+            local y = window_Height / 1.7 + i * (cell_Size )
             table.insert(player.playerCells, Cell(x, y, cell_Size))
         end
     end
@@ -242,7 +242,7 @@ function love.load()
     for i = 0, 2 do
         for j = 0, 2 do
             local x = window_Width / 2.7 + j * (cell_Size + offset)
-            local y = 10 + i * (cell_Size + offset)
+            local y = 10 + i * (cell_Size)
             table.insert(enemy.enemyCells, Cell(x, y, cell_Size))
         end
     end
