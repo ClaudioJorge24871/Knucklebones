@@ -30,7 +30,7 @@ local enemy = {
 }
 
 local game = {
-    player_Turn = true,
+    player_Turn = math.random(1,10) >= 5 ,
     state = {
         menu = true,
         running = false,
@@ -240,6 +240,9 @@ end
 local function startNewGame()
     changeGameState("running")
     roll = true
+    if not player.player_Turn then
+        computerTurn()
+    end
 end
 
 --[[ 
