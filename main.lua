@@ -3,6 +3,7 @@ local socket = require 'socket'
 local Dice = require("Dice")
 local Cell = require("Cell")
 local Button = require("Button")
+local moonshine = require("moonshine") 
 
 math.randomseed(os.time())
 
@@ -29,7 +30,7 @@ local enemy = {
 }
 
 local game = {
-    player_Turn = true,
+    player_Turn = math.random(1,10) >= 5 ,
     state = {
         menu = true,
         running = false,
@@ -239,6 +240,9 @@ end
 local function startNewGame()
     changeGameState("running")
     roll = true
+    if not player.player_Turn then
+        computerTurn()
+    end
 end
 
 --[[ 
@@ -246,6 +250,14 @@ end
 ]]
 function love.load()
     menu_background_image = love.graphics.newImage('/images/background_image.jpg')
+
+    -- Setting up moonshine
+    love.graphics.setBackgroundColor(0, 0, 0)
+    _G.effect = moonshine(moonshine.effects.vignette).chain(moonshine.effects.posterize).chain(moonshine.effects.filmgrain)
+    
+    effect.vignette.radius = 1.5
+    effect.posterize.num_bands = 10
+
     -- Creation of menu buttons 
     buttons.menu_State.play_Game = Button("Play Game",startNewGame,nil,180,60)
     buttons.menu_State.settings = Button("Settings",nil,nil,180,60)
@@ -310,10 +322,7 @@ function love.update(dt)
     end
 end
 
---[[ 
-    Function to draw on the screen
-]]
-function love.draw()
+local function drawEverything()
     -- draw the background_image
     love.graphics.setBackgroundColor(1,1,1)
     love.graphics.setColor(1,1,1,1)
@@ -370,6 +379,15 @@ function love.draw()
         love.graphics.print("Player points: "..player.points, points_Text_X, points_Text_Y)
     
         -- draw the Die
-        die:draw(40, window_Height / 2, 100, 100) 
+        die:draw(50, window_Height / 2, 100, 100) 
     end
+end
+
+--[[ 
+    Function to draw on the screen
+]]
+function love.draw()
+    effect(function()
+        drawEverything()
+    end)
 end
