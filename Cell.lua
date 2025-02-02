@@ -8,7 +8,9 @@ function Cell(x, y, size)
         die_number = 0,
 
         draw = function(self)
-            love.graphics.setColor(0, 0, 0)
+            love.graphics.setColor(styles.colors.cell_border) -- border
+            love.graphics.rectangle("fill", self.x - 2, self.y - 2, self.size + 4, self.size + 4)
+            love.graphics.setColor(styles.colors.cell_color) 
             love.graphics.rectangle("fill", self.x, self.y, self.size, self.size)
         end,
 

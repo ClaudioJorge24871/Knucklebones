@@ -51,7 +51,9 @@ _G.styles = {
         grey = {0.5, 0.5, 0.5},
         blue = {18 / 255, 108 / 255, 248 / 255},
         red = {248 / 255, 39 / 255, 18 / 255},
-        purple = {196/255, 18 / 255, 248 / 255}
+        purple = {196/255, 18 / 255, 248 / 255},
+        cell_border = {45 / 255, 31 / 255, 15 / 255},
+        cell_color = {25 / 255, 20 / 255, 13 / 255}
     },
     fonts = {
         title = {
@@ -302,12 +304,12 @@ function love.load()
 
     -- Creation of Cells 
     local cell_Size = 100
-    local offset = cell_Size / 4
+    local offset = 10
     -- create cells for player cells
     for i = 0, 2 do
         for j = 0, 2 do
             local x = window_Width / 2.7 + j * (cell_Size + offset)
-            local y = window_Height / 1.7 + i * (cell_Size )
+            local y = window_Height / 1.7 + i * (cell_Size  + offset)
             table.insert(player.playerCells, Cell(x, y, cell_Size))
         end
     end
@@ -315,7 +317,7 @@ function love.load()
     for i = 0, 2 do
         for j = 0, 2 do
             local x = window_Width / 2.7 + j * (cell_Size + offset)
-            local y = 10 + i * (cell_Size)
+            local y = 10 + i * (cell_Size +  offset)
             table.insert(enemy.enemyCells, Cell(x, y, cell_Size))
         end
     end
