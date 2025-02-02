@@ -284,7 +284,7 @@ function love.load()
     
     effect.vignette.radius = 1.5
 
-    _G.waterShader = love.graphics.newShader("water.frag") -- setting up the water effect
+    _G.waterShader = love.graphics.newShader("bckgrnd_effect.frag") -- setting up the water effect
 
     -- Creation of menu buttons 
     buttons.menu_State.play_Game = Button("Play Game",startNewGame,nil,180,60)
@@ -372,8 +372,8 @@ local function drawEverything()
 
         -- Draw the title 
         love.graphics.setFont(styles.fonts.title.font)
-        love.graphics.printf("Knucklebones",window_Width / 2 - 16 * 20 ,20, window_Width, "left")
-        love.graphics.setFont(styles.fonts.default_Font.font) -- reset to default font
+        love.graphics.printf("Knucklebones", 0, 50, window_Width, "center")  -- Changed y-position to 50 and centered text
+        love.graphics.setFont(styles.fonts.default_Font.font)
 
         -- Draw a random die
         die:draw(window_Width / 2 - 70 , 200 , 100, 100)      
