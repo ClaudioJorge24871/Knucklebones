@@ -55,7 +55,9 @@ _G.styles = {
         red = {248 / 255, 39 / 255, 18 / 255},
         purple = {196/255, 18 / 255, 248 / 255},
         cell_border = {45 / 255, 31 / 255, 15 / 255},
-        cell_color = {25 / 255, 20 / 255, 13 / 255}
+        cell_color = {25 / 255, 20 / 255, 13 / 255},
+        soft_yellow = {1, 231/255, 183/255},
+        soft_blue = {156 / 255, 159 / 255, 1}
     },
     fonts = {
         title = {
@@ -74,6 +76,19 @@ local function changeGameState(state)
     game.state["menu"] = state == "menu"
     game.state["running"] = state == "running"
     game.state["ended"] = state == "ended"
+end
+
+local function isPartOfCombo(cell, person)
+    local comboCount = 1
+    local cells = (person == "player") and player.playerCells or enemy.enemyCells
+    
+    for _, otherCell in pairs(cells) do
+        if otherCell.x == cell.x and otherCell ~= cell and otherCell.die_number == cell.die_number then
+            comboCount = comboCount + 1
+        end
+    end
+    
+    return comboCount
 end
 
 --[[
@@ -408,8 +423,8 @@ local function drawEverything()
         love.graphics.printf("Knucklebones", 0, 50, window_Width, "center")  -- Changed y-position to 50 and centered text
         love.graphics.setFont(styles.fonts.default_Font.font)
 
-        -- Draw a random die
-        die:draw(window_Width / 2 - 70 , 200 , 100, 100)      
+        -- Draw a random die on the menu screen
+        die:draw(window_Width / 2 - 70 , 200 , 100, 100, styles.colors.egg_white)      
         
     else -- if its running or ended
     
@@ -419,7 +434,13 @@ local function drawEverything()
             if cell.die_number ~= 0 then
                 local cell_Die = Dice(cell.die_number)
                 local offset = 10
-                cell_Die:draw(cell.x + offset, cell.y + offset, 80, 80)
+                local dieColor = styles.colors.egg_white
+                if isPartOfCombo(cell,"player") == 2 then
+                    dieColor = styles.colors.soft_yellow
+                elseif isPartOfCombo(cell,"player") == 3 then
+                    dieColor = styles.colors.soft_blue
+                end
+                cell_Die:draw(cell.x + offset, cell.y + offset, 80, 80, dieColor)
             end
         end
     
@@ -429,7 +450,13 @@ local function drawEverything()
             if cell.die_number ~= 0 then
                 local cell_Die = Dice(cell.die_number)
                 local offset = 10
-                cell_Die:draw(cell.x + offset, cell.y + offset, 80, 80)
+                local dieColor = styles.colors.egg_white
+                if isPartOfCombo(cell,"enemy") == 2 then
+                    dieColor = styles.colors.soft_yellow
+                elseif isPartOfCombo(cell,"enemy") == 3 then
+                    dieColor = styles.colors.soft_blue
+                end
+                cell_Die:draw(cell.x + offset, cell.y + offset, 80, 80, dieColor)
             end
         end
     
@@ -448,7 +475,7 @@ local function drawEverything()
         love.graphics.print("Player points: "..player.points, points_Text_X, points_Text_Y)
     
         -- draw the Die
-        die:draw(50, window_Height / 2, 100, 100) 
+        die:draw(50, window_Height / 2, 100, 100, styles.colors.egg_white) 
 
         if game.state["ended"] then
             love.graphics.setFont(styles.fonts.title.font)
@@ -465,7 +492,7 @@ local function drawEverything()
         end
        
         -- draw the Die
-        die:draw(50, window_Height / 2, 100, 100) 
+        die:draw(50, window_Height / 2, 100, 100,styles.colors.egg_white) 
     end
 end
 

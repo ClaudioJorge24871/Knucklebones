@@ -44,10 +44,16 @@ function Dice(_number)
         end,
 
         -- draw the die given coordinates and size
-        draw = function(self, x_Pos, y_Pos, width, height)
-            love.graphics.setColor(styles.colors.egg_grey)
+        draw = function(self, x_Pos, y_Pos, width, height, color)
+            color = color or styles.colors.egg_white  -- Use parameter or default
+            local darker_Color = {
+                color[1] * 0.7,
+                color[2] * 0.7,
+                color[3] * 0.7
+            } 
+            love.graphics.setColor(darker_Color) -- little shadow around the die
             self:drawRoundedDie(x_Pos, y_Pos, width, height, 5)
-            love.graphics.setColor(styles.colors.egg_white)
+            love.graphics.setColor(color)  -- Use the color parameter here
             self:drawRoundedDie(x_Pos + 5, y_Pos + 5, width - 10, height - 10, 5)
             love.graphics.setColor(styles.colors.black)
             draw_helper(x_Pos,y_Pos,width,height)
