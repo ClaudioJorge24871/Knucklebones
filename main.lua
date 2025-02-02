@@ -274,14 +274,17 @@ end
     Function to load the inital data
 ]]
 function love.load()
-    menu_background_image = love.graphics.newImage('/images/background_image.jpg')
+    menu_background_image = love.graphics.newImage('/images/bkg_image_knbones.png')
+    _G.bgWidth = menu_background_image:getWidth()
+    _G.bgHeight = menu_background_image:getHeight()
 
     -- Setting up moonshine
     love.graphics.setBackgroundColor(0, 0, 0)
-    _G.effect = moonshine(moonshine.effects.vignette).chain(moonshine.effects.posterize).chain(moonshine.effects.filmgrain)
+    _G.effect = moonshine(moonshine.effects.vignette)
     
     effect.vignette.radius = 1.5
-    effect.posterize.num_bands = 10
+
+    _G.waterShader = love.graphics.newShader("water.frag") -- setting up the water effect
 
     -- Creation of menu buttons 
     buttons.menu_State.play_Game = Button("Play Game",startNewGame,nil,180,60)
@@ -322,6 +325,9 @@ end
     Function to update the game logic
 ]]
 function love.update(dt)
+    shaderTime = (shaderTime or 0) + dt /5
+    waterShader:send("time", shaderTime)
+
     if game.state["menu"] then
         for index in pairs(buttons.menu_State) do
             local mouse_X , mouse_Y = love.mouse.getPosition()
@@ -349,10 +355,14 @@ end
 
 
 local function drawEverything()
-    -- draw the background_image
-    love.graphics.setBackgroundColor(1,1,1)
-    love.graphics.setColor(1,1,1,1)
-    love.graphics.draw(menu_background_image)
+    -- Calculate scaling factors to fit the window
+    local scaleX = window_Width / bgWidth
+    local scaleY = window_Height / bgHeight
+
+    -- Draw the background with the shader and scaling
+    love.graphics.setShader(waterShader)
+    love.graphics.draw(menu_background_image, 0, 0, 0, scaleX, scaleY)
+    love.graphics.setShader()
 
     if game.state["menu"] then
         -- if we are on menu state, draw the menu buttons created on love.local
@@ -415,7 +425,13 @@ end
     Function to draw on the screen
 ]]
 function love.draw()
+    -- Apply moonshine effect to game elements
     effect(function()
         drawEverything()
     end)
+end
+
+
+function love.resize(w, h)
+    window_Width, window_Height = w, h
 end
