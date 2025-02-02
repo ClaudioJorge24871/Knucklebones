@@ -31,14 +31,25 @@ function Dice(_number)
         end
     end
 
+
     return{
+        drawRoundedDie = function(self, x, y, width, height, radius)
+            local segments = 10
+            love.graphics.arc("fill", x + radius, y + radius, radius, math.pi, 1.5 * math.pi, segments)
+            love.graphics.arc("fill", x + width - radius, y + radius, radius, 1.5 * math.pi, 2 * math.pi, segments)
+            love.graphics.arc("fill", x + radius, y + height - radius, radius, 0.5 * math.pi, math.pi, segments)
+            love.graphics.arc("fill", x + width - radius, y + height - radius, radius, 0, 0.5 * math.pi, segments)
+            love.graphics.rectangle("fill", x + radius, y, width - 2 * radius, height)
+            love.graphics.rectangle("fill", x, y + radius, width, height - 2 * radius)
+        end,
+
         -- draw the die given coordinates and size
         draw = function(self, x_Pos, y_Pos, width, height)
-            love.graphics.setColor(styles.colors.white) -- white
-            love.graphics.rectangle("fill", x_Pos + 5, y_Pos + 5, width, height) -- shadow 
-            love.graphics.rectangle("fill", x_Pos, y_Pos, width, height)
-            love.graphics.setColor(styles.colors.black) -- black
-            love.graphics.rectangle("line",x_Pos - 2, y_Pos - 2, width + 2, height + 2)
+            love.graphics.setColor(styles.colors.egg_grey)
+            self:drawRoundedDie(x_Pos, y_Pos, width, height, 5)
+            love.graphics.setColor(styles.colors.egg_white)
+            self:drawRoundedDie(x_Pos + 5, y_Pos + 5, width - 10, height - 10, 5)
+            love.graphics.setColor(styles.colors.black)
             draw_helper(x_Pos,y_Pos,width,height)
         end,
 
