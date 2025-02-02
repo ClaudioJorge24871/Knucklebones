@@ -138,6 +138,69 @@ local function checkEndedGame()
     end
 end
 
+--[[ 
+    Function for computer turn
+]]
+local function computerTurn()
+    local available_Columns = {}
+    for _, cell in pairs(enemy.enemyCells) do
+        if cell.die_number == 0 then
+            available_Columns[cell.x] = true
+        end
+    end
+
+    local columnKeys = {}
+    for columnX, _ in pairs(available_Columns) do
+        table.insert(columnKeys, columnX)
+    end
+
+    if #columnKeys > 0 then
+        local randomColumn = columnKeys[math.random(1, #columnKeys)]
+
+        local target_Cell = nil
+        for _, cell in pairs(enemy.enemyCells) do
+            if cell.x == randomColumn and cell.die_number == 0 then
+                if not target_Cell or cell.y > target_Cell.y then
+                    target_Cell = cell
+                end
+            end
+        end
+
+        if target_Cell then
+            target_Cell.die_number = die.getNumber()
+            -- incremet the enemy points
+            enemy.points = enemy.points + checkComboPoints("enemy",target_Cell.x,target_Cell.y,target_Cell.die_number)
+            roll = true
+        end
+    end
+    
+    game.player_Turn = true
+end
+
+--[[
+    Starts a new game
+    Used on main menu and replay game
+]]
+local function startNewGame()
+    if game.state["ended"] then
+        -- cleans all cells
+        for _,cell in pairs(player.playerCells) do
+            cell.die_number = 0
+            player.points = 0
+        end
+        for _, cell in pairs(enemy.enemyCells) do
+            cell.die_number = 0
+            enemy.points = 0
+        end
+        player.player_Turn = not player.player_Turn
+    end
+    changeGameState("running")
+    roll = true
+    if not player.player_Turn then
+        computerTurn()
+    end
+end
+
 --[[
     Function called for when mouse is clicked
     can be seen as the player turn function
@@ -176,46 +239,9 @@ function love.mousepressed(x, y, button, istouch, presses)
         for index in pairs(buttons.menu_State) do
             buttons.menu_State[index]:checkPressed(x,y)
         end
+    else
+        startNewGame()
     end
-end
-
---[[ 
-    Function for computer turn
-]]
-local function computerTurn()
-    local available_Columns = {}
-    for _, cell in pairs(enemy.enemyCells) do
-        if cell.die_number == 0 then
-            available_Columns[cell.x] = true
-        end
-    end
-
-    local columnKeys = {}
-    for columnX, _ in pairs(available_Columns) do
-        table.insert(columnKeys, columnX)
-    end
-
-    if #columnKeys > 0 then
-        local randomColumn = columnKeys[math.random(1, #columnKeys)]
-
-        local target_Cell = nil
-        for _, cell in pairs(enemy.enemyCells) do
-            if cell.x == randomColumn and cell.die_number == 0 then
-                if not target_Cell or cell.y > target_Cell.y then
-                    target_Cell = cell
-                end
-            end
-        end
-
-        if target_Cell then
-            target_Cell.die_number = die.getNumber()
-            -- incremet the enemy points
-            enemy.points = enemy.points + checkComboPoints("enemy",target_Cell.x,target_Cell.y,target_Cell.die_number)
-            roll = true
-        end
-    end
-    
-    game.player_Turn = true
 end
 
 --[[
@@ -259,18 +285,6 @@ local function checkDieCollision()
                 end
             end
         end
-    end
-end
-
---[[
-    Starts a new game
-    Used on main menu and replay game
-]]
-local function startNewGame()
-    changeGameState("running")
-    roll = true
-    if not player.player_Turn then
-        computerTurn()
     end
 end
 
