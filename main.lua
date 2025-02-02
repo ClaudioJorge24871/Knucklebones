@@ -196,23 +196,23 @@ end
     Used on main menu and replay game
 ]]
 local function startNewGame()
-    if game.state["ended"] then
-        -- cleans all cells
-        for _,cell in pairs(player.playerCells) do
-            cell.die_number = 0
-            player.points = 0
-        end
-        for _, cell in pairs(enemy.enemyCells) do
-            cell.die_number = 0
-            enemy.points = 0
-        end
-        player.player_Turn = not player.player_Turn
-    end
+        
     changeGameState("running")
     roll = true
     if not player.player_Turn then
         computerTurn()
     end
+
+    -- cleans all cells
+    for _,cell in pairs(player.playerCells) do
+        cell.die_number = 0
+        player.points = 0
+    end
+    for _, cell in pairs(enemy.enemyCells) do
+        cell.die_number = 0
+        enemy.points = 0
+    end
+    player.player_Turn = not player.player_Turn
 end
 
 --[[
