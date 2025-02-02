@@ -66,6 +66,12 @@ _G.styles = {
     }
 }
 
+local function changeGameState(state)
+    game.state["menu"] = state == "menu"
+    game.state["running"] = state == "running"
+    game.state["ended"] = state == "ended"
+end
+
 
 --[[
     Function to help increment points when a combo occurs
@@ -100,6 +106,31 @@ local function checkComboPoints(person, column, row, number_to_Check)
         return number_to_Check * 9 - number_to_Check - number_to_Check
     else
         return number_to_Check
+    end
+end
+
+--[[
+    Checks if any player has its matrix full
+]]
+local function checkEndedGame()
+    local playerFull = true
+    for _, cell in pairs(player.playerCells) do
+        if cell.die_number == 0 then
+            playerFull = false
+            break
+        end
+    end
+
+    local enemyFull = true
+    for _, cell in pairs(enemy.enemyCells) do
+        if cell.die_number == 0 then
+            enemyFull = false
+            break
+        end
+    end
+
+    if playerFull or enemyFull then
+        changeGameState("ended")
     end
 end
 
@@ -179,7 +210,7 @@ local function computerTurn()
             roll = true
         end
     end
-
+    
     game.player_Turn = true
 end
 
@@ -225,12 +256,6 @@ local function checkDieCollision()
             end
         end
     end
-end
-
-local function changeGameState(state)
-    game.state["menu"] = state == "menu"
-    game.state["running"] = state == "running"
-    game.state["ended"] = state == "ended"
 end
 
 --[[
@@ -308,7 +333,6 @@ function love.update(dt)
             die = Dice(number)
             roll = false
         end
-
         if not roll and not game.player_Turn and computer_Waiting then
             computer_Delay = computer_Delay + dt
             if computer_Delay >= 0.5 then
@@ -318,9 +342,11 @@ function love.update(dt)
             end
         end
 
+        checkEndedGame() -- checking if any grid is full
         checkDieCollision() -- checking if there are die collision
     end
 end
+
 
 local function drawEverything()
     -- draw the background_image
@@ -380,6 +406,8 @@ local function drawEverything()
     
         -- draw the Die
         die:draw(50, window_Height / 2, 100, 100) 
+    elseif game.state["ended"] then
+        love.graphics.print("Ended", 200,200)
     end
 end
 
