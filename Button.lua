@@ -25,7 +25,8 @@ function Button(_text, _func, _func_Param, _width, _height, _borderRadius)
                         self.func()
                     end
                 end
-            end  
+            end 
+            love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
         end,
 
         -- Function to draw a rounded rectangle
@@ -89,17 +90,13 @@ function Button(_text, _func, _func_Param, _width, _height, _borderRadius)
         end,
 
         -- Check if the button is being hovered
+        -- In Button.lua, update the checkHover function:
         checkHover = function (self, mouse_X, mouse_Y)
+            self.isHovered = false
             if mouse_X >= self.button_X and mouse_X <= self.button_X + self.width then
                 if mouse_Y >= self.button_Y and mouse_Y <= self.button_Y + self.height then
                     self.isHovered = true
-                    love.mouse.setCursor(love.mouse.getSystemCursor("hand"))
-                else
-                    love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
-                    self.isHovered = false
                 end
-            else
-                self.isHovered = false
             end
         end
     }

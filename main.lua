@@ -346,9 +346,19 @@ function love.update(dt)
     waterShader:send("time", shaderTime)
 
     if game.state["menu"] then
-        for index in pairs(buttons.menu_State) do
-            local mouse_X , mouse_Y = love.mouse.getPosition()
-            buttons.menu_State[index]:checkHover(mouse_X, mouse_Y)
+        local anyHovered = false
+        local mouse_X, mouse_Y = love.mouse.getPosition()
+        for _, button in pairs(buttons.menu_State) do
+            button:checkHover(mouse_X, mouse_Y)
+            if button.isHovered then
+                anyHovered = true
+            end
+        end
+        -- Set cursor based on any hovered button
+        if anyHovered then
+            love.mouse.setCursor(love.mouse.getSystemCursor("hand"))
+        else
+            love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
         end
     elseif game.state["running"] then
         if roll then
