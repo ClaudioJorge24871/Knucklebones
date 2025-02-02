@@ -378,7 +378,7 @@ local function drawEverything()
         -- Draw a random die
         die:draw(window_Width / 2 - 70 , 200 , 100, 100)      
         
-    elseif game.state["running"] then
+    else -- if its running or ended
     
         -- draw the player matrix
         for _, cell in pairs(player.playerCells) do
@@ -416,8 +416,20 @@ local function drawEverything()
     
         -- draw the Die
         die:draw(50, window_Height / 2, 100, 100) 
-    elseif game.state["ended"] then
-        love.graphics.print("Ended", 200,200)
+
+        if game.state["ended"] then
+            love.graphics.setFont(styles.fonts.title.font)
+            love.graphics.setColor(styles.colors.white)
+            if player.points >= enemy.points then -- if the player has more points, wins
+                love.graphics.printf("Player wins",0,window_Height / 2.5,window_Width,"center") 
+            else
+                love.graphics.printf("Computer wins",0,window_Height / 2.5,window_Width,"center") 
+            end
+            love.graphics.setFont(styles.fonts.default_Font.font)
+        end
+       
+        -- draw the Die
+        die:draw(50, window_Height / 2, 100, 100) 
     end
 end
 
