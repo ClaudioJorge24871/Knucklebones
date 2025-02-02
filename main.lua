@@ -76,7 +76,6 @@ local function changeGameState(state)
     game.state["ended"] = state == "ended"
 end
 
-
 --[[
     Function to help increment points when a combo occurs
 
@@ -368,10 +367,16 @@ function love.update(dt)
 
         checkEndedGame() -- checking if any grid is full
         checkDieCollision() -- checking if there are die collision
+    else
+        if love.keyboard.isDown("escape") then
+            changeGameState("menu")
+        end
     end
 end
 
-
+--[[ 
+    Function to draw on the screen
+]]
 local function drawEverything()
     -- Calculate scaling factors to fit the window
     local scaleX = window_Width / bgWidth
@@ -439,10 +444,13 @@ local function drawEverything()
             love.graphics.setFont(styles.fonts.title.font)
             love.graphics.setColor(styles.colors.white)
             if player.points >= enemy.points then -- if the player has more points, wins
-                love.graphics.printf("Player wins",0,window_Height / 2.5,window_Width,"center") 
+                love.graphics.printf("Player wins",-50,window_Height / 2.5,window_Width,"center") 
             else
-                love.graphics.printf("Computer wins",0,window_Height / 2.5,window_Width,"center") 
+                love.graphics.printf("Computer wins",-50,window_Height / 2.5,window_Width,"center") 
             end
+            love.graphics.setFont(styles.fonts.buttons.font)
+            -- print a legend for replaying or go to menu
+            love.graphics.print("Press ESC to exit or click to play again", 20, window_Height - 50)
             love.graphics.setFont(styles.fonts.default_Font.font)
         end
        
@@ -452,7 +460,7 @@ local function drawEverything()
 end
 
 --[[ 
-    Function to draw on the screen
+    Calls draw everything with a filter
 ]]
 function love.draw()
     -- Apply moonshine effect to game elements
