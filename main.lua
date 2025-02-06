@@ -68,7 +68,10 @@ _G.styles = {
         },
         buttons = {
             font_Size = 30
-        }
+        },
+        sub_Title = {
+            font_Size = 40
+        },
     }
 }
 
@@ -327,6 +330,7 @@ function love.load()
     styles.fonts.title.font = love.graphics.newFont('/fonts/ANUNEDW_.TTF',styles.fonts.title.font_Size)
     styles.fonts.default_Font.font = love.graphics.getFont()
     styles.fonts.buttons.font = love.graphics.newFont('/fonts/BebasNeue-Regular.TTF',styles.fonts.buttons.font_Size)
+    styles.fonts.sub_Title.font = love.graphics.newFont('/fonts/ANUNEDW_.TTF',styles.fonts.sub_Title.font_Size)
 
     -- Giving value to die of menu
     local random_number = math.random(1,6)
@@ -460,19 +464,30 @@ local function drawEverything()
             end
         end
     
-        -- draw the enemy points
-        local last_Cell = enemy.enemyCells[#enemy.enemyCells]
-        local points_Text_X = last_Cell.x + last_Cell.size + 5
-        local points_Text_Y = last_Cell.y + last_Cell.size - 12
         love.graphics.setColor(styles.colors.white)
-        love.graphics.print("Enemy points: "..enemy.points, points_Text_X, points_Text_Y)
-    
+        --draw the enemy text
+        local last_Cell = enemy.enemyCells[#enemy.enemyCells]
+        local enemy_Text_X = last_Cell.x + last_Cell.size *3
+        local enemy_Text_Y = last_Cell.y + last_Cell.size / 2
+        love.graphics.setFont(styles.fonts.sub_Title.font)
+        love.graphics.print("Enemy",enemy_Text_X,enemy_Text_Y)
+
+        -- draw the enemy points
+        local points_Text_X = last_Cell.x + last_Cell.size * 3.5
+        local points_Text_Y = enemy_Text_Y + last_Cell.size / 2
+        love.graphics.print(enemy.points, points_Text_X, points_Text_Y)
+
+
         -- draw the player points
         local first_Cell = player.playerCells[1]
-        local points_Text_X = first_Cell.x - first_Cell.size
-        local points_Text_Y = first_Cell.y
-        love.graphics.setColor(styles.colors.white)
-        love.graphics.print("Player points: "..player.points, points_Text_X, points_Text_Y)
+        local player_Text_X = first_Cell.x/2
+        local player_Text_Y = first_Cell.y 
+        love.graphics.print("Player",player_Text_X,player_Text_Y)
+    
+        -- draw the player points
+        local points_Text_X = first_Cell.x / 2 + first_Cell.size/2
+        local points_Text_Y = first_Cell.y + first_Cell.size / 2
+        love.graphics.print(player.points, points_Text_X, points_Text_Y)
     
         -- draw the Die
         die:draw(50, window_Height / 2, 100, 100, styles.colors.egg_white) 
